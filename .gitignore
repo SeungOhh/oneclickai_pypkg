@@ -1,0 +1,8 @@
+# ignore all files in dist folder
+dist/*
+
+# ignore all files in build folder 
+build/*
+
+# ignore all files in oneclickai.egg-info
+oneclickai.egg-info/*
