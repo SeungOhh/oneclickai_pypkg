@@ -5,7 +5,7 @@ YOLO 모델을 쉽게 학습해보고 바로 실행해 볼 수 있도록 하는 
 OneClickAI에서 제공하는 교육용 Python 패키지는 인공지능(AI) 학습을 위한 필수 도구들을 손쉽게 설치하고 활용할 수 있도록 도와줍니다. 이 패키지를 통해 TensorFlow, Ultralytics, OpenCV와 같은 필수 라이브러리를 한 번에 설치하고, 추가적인 부가 기능도 손쉽게 통합할 수 있습니다.
 
 ## 주요 설치 패키지
-- **oneclickai**
+- **oneclickai**  
   자체적으로 모델을 쉽게 학습해보고 테스트 해 볼 수 있는 기능 제공 (설명서는 oneclickai.co.kr 참고)
 
 - **TensorFlow**  
@@ -43,7 +43,7 @@ The **OneClickAI** educational Python package provides essential tools for AI le
 With this package, you can install essential libraries such as **TensorFlow**, **Ultralytics**, and **OpenCV** all at once, while also integrating additional features seamlessly.
 
 ## Main Installed Packages
-- **oneclickai**
+- **oneclickai**  
   It comes with "easy to try and run" packages that allows you to just install and try out some of the models. (still working on instructions) 
 
 - **TensorFlow**  
