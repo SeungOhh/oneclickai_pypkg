@@ -1,3 +1,6 @@
+![Main image](./public/main.jpg)
+
+
 # OneClickAI Python 패키지
 YOLO 모델을 쉽게 학습해보고 바로 실행해 볼 수 있도록 하는 패키지 입니다. 
 이론 교육에 앞서 미리 모델을 체험해보고 YOLO 모델의 구조 및 실행 방식에 대해 알아 볼 수 있습니다. 모델은 Tensorflow 기반의 모델로 작성되었습니다.
