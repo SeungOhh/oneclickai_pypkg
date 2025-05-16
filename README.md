@@ -1,4 +1,4 @@
-![Main image](./public/main.jpg)
+![Main image](./public/main.png)
 
 
 # OneClickAI Python 패키지
