@@ -5,4 +5,15 @@ dist/*
 build/*
 
 # ignore all files in oneclickai.egg-info
-oneclickai.egg-info/*
+oneclickai.egg-info
+
+# ignore some personal files
+패키지올리는방법.txt
+
+*.h5
+
+test/*
+
+
+# ignore all .pyc files
+*.pyc
