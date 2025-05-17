@@ -48,7 +48,7 @@ import numpy as np
 model = load_model("YOLO_coco")
 
 # image path
-image = cv2.imread('https://github.com/SeungOhh/oneclickai_pypkg/blob/main/public/test1.png')/255.0
+image = cv2.imread('/path/to/imagefile')/255.0
 
 # coco dataset cls names
 coco_cls_names = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat',
