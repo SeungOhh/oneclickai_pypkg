@@ -7,6 +7,7 @@ from datetime import datetime
 from . import yoloModel8
 from . import createDataGenerator
 from .yoloLoss import yolo_loss_tf
+from .load_model import load_model
 
 
 def fit_yolo_model(train_data_path, train_label_path, val_data_path, val_label_path, epochs=100, batch_size=64):
@@ -16,16 +17,27 @@ def fit_yolo_model(train_data_path, train_label_path, val_data_path, val_label_p
     if not os.path.exists(folder_name):
         os.makedirs(folder_name)
 
+
+    # save model extension, if tensorflow version is equal or less than 2.15.0, use .h5 extension
+    # else use .keras extension
+    if tf.__version__ <= '2.15.0':
+        ext = '.h5'
+    else:
+        # use .keras extension
+        ext = '.keras'
+
+
     # model file name
-    model_file_best = folder_name + '/yolo_model_best.keras'
-    model_file_last = folder_name + '/yolo_model_last.keras'
+    model_file_best = folder_name + '/yolo_model_best' + ext
+    model_file_last = folder_name + '/yolo_model_last' + ext
 
 
     num_classes = 80  # Example number of classes
     img_size = 320
 
     # create model
-    model = yoloModel8.create_yolov8_model(num_classes, img_size)
+    model = load_model('YOLO_coco')
+    # model = yoloModel8.create_yolov8_model(num_classes, img_size)
     high_stride = model.output_shape[0][1]
     low_stride = model.output_shape[1][1]
     # model.summary()
@@ -49,7 +61,7 @@ def fit_yolo_model(train_data_path, train_label_path, val_data_path, val_label_p
 
     # save model every epoch with epoch number in file name
     model_checkpoint_callback2 = tf.keras.callbacks.ModelCheckpoint(
-        filepath=folder_name + '/yolo_model_epoch_{epoch}.keras',
+        filepath=folder_name + '/yolo_model_epoch_{epoch}' + ext,
         save_weights_only=False,
         monitor='val_loss',
         mode='min',

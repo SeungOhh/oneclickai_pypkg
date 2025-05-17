@@ -13,7 +13,9 @@ def data_generator(num_classes, high_stride, low_stride, img_size,
                    data_path, label_path, batch_size=32, shuffle=True, prob=0.5):
 
     # List image files (without extension)
-    image_files = [f[:-4] for f in os.listdir(data_path) if f.endswith('.jpg')]
+    image_list = [f for f in os.listdir(data_path) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
+    image_files = [os.path.splitext(f)[0] for f in image_list]
+    
     num_images = len(image_files)
     indices = np.arange(num_images)
 
@@ -37,8 +39,9 @@ def data_generator(num_classes, high_stride, low_stride, img_size,
         
         for i, idx in enumerate(batch_indices):
             image_id = image_files[idx]
+
             # Load and process the image
-            image_path = os.path.normpath(os.path.join(data_path, image_id + '.jpg'))
+            image_path = os.path.normpath(os.path.join(data_path, image_list[idx]))
             image = cv2.imread(image_path)
 
             # Load annotation

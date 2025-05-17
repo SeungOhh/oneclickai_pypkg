@@ -1,6 +1,12 @@
 ![Main image](./public/main.png)
 
-<br></br><br></br><br></br>
+<br></br><br></br>
+
+<div style="text-align: center;">
+    <img src="./public/yolo1.webp" alt="Alt Text" width="1200">
+</div>
+
+<br></br><br></br>
 
 # OneClickAI Python 패키지
 YOLO 모델을 쉽게 학습해보고 바로 실행해 볼 수 있도록 하는 패키지 입니다. 
@@ -100,6 +106,27 @@ stream(model, conf=0.5, class_names=coco_cls_names, video_source=0)
 
 ```
 
+<br></br>
+
+- **모델학습**  
+
+```
+
+from oneclickai.YOLO import fit_yolo_model
+
+# training data path
+train_data_path = './yolo_dataset'
+train_label_path = './yolo_dataset'
+
+# validation data path
+val_data_path = './yolo_dataset'
+val_label_path = './yolo_dataset'
+
+# fit model
+fit_yolo_model(train_data_path, train_label_path, val_data_path, val_label_path, epochs=30)
+
+```
+
 <br></br><br></br>
 
 # 부가 기능
@@ -110,7 +137,9 @@ OneClickAI 패키지는 기본 제공되는 라이브러리 외에도 교육 목
 사용 중 문의사항이나 지원이 필요하신 경우, [원클릭 에이아이](http://www.oneclickai.co.kr) 문의 페이지를 통해 연락주시기 바랍니다.
 
 
+<br></br><br></br>
 
 
 
+![Alt Text](https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif)
 
