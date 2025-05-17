@@ -3,9 +3,9 @@ import numpy as np
 from .drawImage import draw_result
 from .predict import predict
 
-def stream(model, conf=0.5, cls_names=None):
+def stream(model, conf=0.5, class_names=None, video_source=0):
 
-    capture = cv2.VideoCapture(0)
+    capture = cv2.VideoCapture(video_source)
     if not capture.isOpened():
         print("Error: Could not open video.")
         return
@@ -17,7 +17,7 @@ def stream(model, conf=0.5, cls_names=None):
         frame = frame/255.0
 
         annotations = predict(model, frame, conf=conf)
-        disp_image = draw_result(np.array(frame), annotations, cls_names)
+        disp_image = draw_result(np.array(frame), annotations, class_names)
 
         cv2.imshow('frame', disp_image)
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -43,4 +43,4 @@ if __name__ == '__main__':
                     'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink',
                     'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush']
 
-    stream(model, conf=0.5, cls_names=coco_cls_names)
+    stream(model, conf=0.5, class_names=coco_cls_names)

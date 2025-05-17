@@ -19,7 +19,7 @@ def predict(model, frame, conf=0.5):
 
 
 
-def predict_and_show(model, frame, conf=0.5, cls_names=None):
+def predict_and_show(model, frame, conf=0.5, class_names=None):
     img_size = 320
     high_stride = model.output_shape[0][1]
     low_stride = model.output_shape[1][1]
@@ -28,7 +28,7 @@ def predict_and_show(model, frame, conf=0.5, cls_names=None):
 
     result = model.predict(frame[np.newaxis, ...])
     annotations = labelDecode.decode(result[0][0], result[1][0], high_stride, low_stride, conf)
-    result_image = draw_result(np.array(image), annotations, cls_names)
+    result_image = draw_result(np.array(image), annotations, class_names)
     cv2.imshow('image', result_image)
     cv2.waitKey(0)
     return annotations
@@ -77,4 +77,4 @@ if __name__ == '__main__':
     # method2: load model and predict
     for i in range(5):
         image = cv2.imread(data_path + file_img[i])/255.0
-        result = predict_and_show(model, image, cls_names=coco_cls_names)
+        result = predict_and_show(model, image, class_names=coco_cls_names)

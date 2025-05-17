@@ -1,11 +1,15 @@
 ![Main image](./public/main.png)
 
+<br></br><br></br><br></br>
 
 # OneClickAI Python 패키지
 YOLO 모델을 쉽게 학습해보고 바로 실행해 볼 수 있도록 하는 패키지 입니다. 
 이론 교육에 앞서 미리 모델을 체험해보고 YOLO 모델의 구조 및 실행 방식에 대해 알아 볼 수 있습니다. 모델은 Tensorflow 기반의 모델로 작성되었습니다.
 
-OneClickAI에서 제공하는 교육용 Python 패키지는 인공지능(AI) 학습을 위한 필수 도구들을 손쉽게 설치하고 활용할 수 있도록 도와줍니다. 이 패키지를 통해 TensorFlow, Ultralytics, OpenCV와 같은 필수 라이브러리를 한 번에 설치하고, 추가적인 부가 기능도 손쉽게 통합할 수 있습니다.
+OneClickAI에서 제공하는 교육용 Python 패키지는 인공지능(AI) 학습을 위한 필수 도구들을 손쉽게 설치하고 활용할 수 있도록 도와줍니다. 
+이 패키지를 통해 TensorFlow, Ultralytics, OpenCV와 같은 필수 라이브러리를 한 번에 설치하고, 추가적인 부가 기능도 손쉽게 통합할 수 있습니다.
+
+<br></br><br></br>
 
 ## 주요 설치 패키지
 - **oneclickai**  
@@ -20,6 +24,8 @@ OneClickAI에서 제공하는 교육용 Python 패키지는 인공지능(AI) 학
 - **OpenCV**  
   이미지 및 비디오 처리에 널리 사용되는 라이브러리로, 실시간 컴퓨터 비전 애플리케이션 개발에 필수적입니다.
 
+<br></br><br></br>
+
 ## 설치 방법
 
 아래의 명령어를 통해 OneClickAI 패키지를 설치할 수 있습니다:
@@ -28,7 +34,73 @@ OneClickAI에서 제공하는 교육용 Python 패키지는 인공지능(AI) 학
 pip install oneclickai
 ```
 
+<br></br><br></br>
 
+# YOLO 모델 예제 코드
+
+- **이미지 1장**  
+
+```
+from oneclickai.YOLO import load_model, predict, draw_result
+import cv2
+import numpy as np
+
+model = load_model("YOLO_coco")
+
+# image path
+image = cv2.imread('https://github.com/SeungOhh/oneclickai_pypkg/blob/main/public/test1.png')/255.0
+
+# coco dataset cls names
+coco_cls_names = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat',
+                'traffic light', 'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
+                'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella',
+                'handbag', 'tie', 'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat',
+                'baseball glove', 'skateboard', 'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup', 'fork',
+                'knife', 'spoon', 'bowl', 'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog',
+                'pizza', 'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed', 'dining table', 'toilet', 'tv',
+                'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink',
+                'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush']
+
+
+
+result_annotation = predict(model, image, conf=0.4)
+result_image = draw_result(np.array(image), result_annotation, class_names = coco_cls_names)
+cv2.imshow('image', result_image)
+
+
+# Close the window when 'Esc' is pressed
+if cv2.waitKey(0) & 0xFF == 27:
+    cv2.destroyAllWindows()
+
+```
+
+<br></br>
+
+- **스트리밍**  
+
+```
+
+from oneclickai.YOLO import stream, load_model
+
+# example usage
+model = load_model("YOLO_coco")
+
+# coco dataset cls names
+coco_cls_names = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat',
+                'traffic light', 'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
+                'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella',
+                'handbag', 'tie', 'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat',
+                'baseball glove', 'skateboard', 'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup', 'fork',
+                'knife', 'spoon', 'bowl', 'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog',
+                'pizza', 'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed', 'dining table', 'toilet', 'tv',
+                'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink',
+                'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush']
+
+stream(model, conf=0.5, class_names=coco_cls_names, video_source=0)
+
+```
+
+<br></br><br></br>
 
 # 부가 기능
 OneClickAI 패키지는 기본 제공되는 라이브러리 외에도 교육 목적에 맞는 다양한 부가 기능을 지속적으로 추가할 예정입니다.
@@ -38,37 +110,7 @@ OneClickAI 패키지는 기본 제공되는 라이브러리 외에도 교육 목
 사용 중 문의사항이나 지원이 필요하신 경우, [원클릭 에이아이](http://www.oneclickai.co.kr) 문의 페이지를 통해 연락주시기 바랍니다.
 
 
-<br/><br/><br/><br/><br/><br/>
 
-# OneClickAI Python Package
 
-The **OneClickAI** educational Python package provides essential tools for AI learning, making it easy to install and utilize key libraries.  
-With this package, you can install essential libraries such as **TensorFlow**, **Ultralytics**, and **OpenCV** all at once, while also integrating additional features seamlessly.
 
-## Main Installed Packages
-- **oneclickai**  
-  It comes with "easy to try and run" packages that allows you to just install and try out some of the models. (still working on instructions) 
 
-- **TensorFlow**  
-  An open-source deep learning library developed by Google, used to build and train various machine learning models.
-
-- **Ultralytics**  
-  A library providing the latest **YOLOv8** models, widely used for object detection and computer vision applications.
-
-- **OpenCV**  
-  A popular library for image and video processing, essential for real-time computer vision applications.
-
-## Installation
-
-To install the **OneClickAI** package, use the following command:
-
-```bash
-pip install oneclickai
-```
-
-# Additional Features
-The OneClickAI package is continuously updated with additional features tailored for educational purposes.
-For the latest updates and added functionalities, please visit the [OneclickAI official website](http://www.oneclickai.co.kr).
-
-# Support & Contact
-If you have any questions or require support, please visit the [OneclickAI](http://www.oneclickai.co.kr) contact page for assistance.

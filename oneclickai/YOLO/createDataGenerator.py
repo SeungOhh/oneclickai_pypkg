@@ -91,48 +91,48 @@ def create_tf_dataset(num_classes, high_stride, low_stride, img_size,
     return dataset
 
 
-#%%
-# Example usage:
-if __name__ == '__main__':
-    from drawImage import draw_result_imshow
-    import labelDecode
-    data_path = 'C:/Users/osy04/Desktop/wok_me/project/yolo/images/val2017'
-    label_path = 'C:/Users/osy04/Desktop/wok_me/project/yolo/labels_bbox/val2017'
-    num_classes = 80
-    high_stride = 20
-    low_stride = 5
-    img_size = 360
-    batch_size = 32
-    
-    # Create the generator
-    train_gen = data_generator(num_classes, high_stride, low_stride, img_size,
-                               data_path, label_path, batch_size=1, shuffle=True)
-    
-    x_batch, [y_batch_high, y_batch_low] = next(train_gen)
-    print("x_batch shape:", x_batch.shape)
-    print("y_batch_high shape:", y_batch_high.shape)
-    print("y_batch_low shape:", y_batch_low.shape)
-
-    # Create the tf.data.Dataset
-    train_dataset = create_tf_dataset(num_classes, high_stride, low_stride, img_size,
-                                      data_path, label_path, batch_size=batch_size, shuffle=True)
-    
-
-    coco_cls_names = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat',
-                'traffic light', 'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
-                'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella',
-                'handbag', 'tie', 'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat',
-                'baseball glove', 'skateboard', 'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup', 'fork',
-                'knife', 'spoon', 'bowl', 'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog',
-                'pizza', 'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed', 'dining table', 'toilet', 'tv',
-                'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink',
-                'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush']
-    
-    for i in range(10):
-        x_data, [y_data_high, y_data_low] = next(iter(train_gen))
-        print(x_data.shape, y_data_high.shape, y_data_low.shape)
-        box = labelDecode.decode(y_data_high[0], y_data_low[0], high_stride, low_stride, conf_threshold=0.3, original_image=True)
-        print(box)
-        draw_result_imshow(np.array(x_data[0]), box, coco_cls_names)
 # #%%
+# # Example usage:
+# if __name__ == '__main__':
+#     from drawImage import draw_result_imshow
+#     import labelDecode
+#     data_path = 'C:/Users/osy04/Desktop/wok_me/project/yolo/images/val2017'
+#     label_path = 'C:/Users/osy04/Desktop/wok_me/project/yolo/labels_bbox/val2017'
+#     num_classes = 80
+#     high_stride = 20
+#     low_stride = 5
+#     img_size = 360
+#     batch_size = 32
+    
+#     # Create the generator
+#     train_gen = data_generator(num_classes, high_stride, low_stride, img_size,
+#                                data_path, label_path, batch_size=1, shuffle=True)
+    
+#     x_batch, [y_batch_high, y_batch_low] = next(train_gen)
+#     print("x_batch shape:", x_batch.shape)
+#     print("y_batch_high shape:", y_batch_high.shape)
+#     print("y_batch_low shape:", y_batch_low.shape)
+
+#     # Create the tf.data.Dataset
+#     train_dataset = create_tf_dataset(num_classes, high_stride, low_stride, img_size,
+#                                       data_path, label_path, batch_size=batch_size, shuffle=True)
+    
+
+#     coco_cls_names = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat',
+#                 'traffic light', 'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
+#                 'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella',
+#                 'handbag', 'tie', 'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat',
+#                 'baseball glove', 'skateboard', 'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup', 'fork',
+#                 'knife', 'spoon', 'bowl', 'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog',
+#                 'pizza', 'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed', 'dining table', 'toilet', 'tv',
+#                 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink',
+#                 'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush']
+    
+#     for i in range(10):
+#         x_data, [y_data_high, y_data_low] = next(iter(train_gen))
+#         print(x_data.shape, y_data_high.shape, y_data_low.shape)
+#         box = labelDecode.decode(y_data_high[0], y_data_low[0], high_stride, low_stride, conf_threshold=0.3, original_image=True)
+#         print(box)
+#         draw_result_imshow(np.array(x_data[0]), box, coco_cls_names)
+# # #%%
 
