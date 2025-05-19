@@ -30,15 +30,20 @@ def draw_result(image, annotation, class_names=None):
         y = y * img_size_y
         w = w * img_size_x
         h = h * img_size_y
-        cv2.rectangle(disp_image, (int(x-w/2), int(y-h/2)), (int(x+w/2), int(y+h/2)), (0, 255, 0), 2)
+        
 
+        # check if class id is valid
+        if (class_names != None) and (class_id >= len(class_names)):
+            continue
 
         # if coco dataset, display class name
         if class_names is not None:
             cls_name = class_names[int(class_id)]
         else: 
             cls_name = str(int(class_id))
-            
+        
+        # display box
+        cv2.rectangle(disp_image, (int(x-w/2), int(y-h/2)), (int(x+w/2), int(y+h/2)), (0, 255, 0), 2)
         # display class name
         cv2.putText(disp_image, cls_name, (int(x-w/2+5), int(y+h/2-5)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
