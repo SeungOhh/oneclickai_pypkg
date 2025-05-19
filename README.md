@@ -51,12 +51,15 @@ from oneclickai.YOLO import load_model, predict, draw_result
 import cv2
 import numpy as np
 
-model = load_model("YOLO_coco")
 
-# image path
+# model path: 여기에 모델 위치를 넣어주세요. 상대위치 or 절대위치
+# model path: "YOLO_coco" coco data로 학습한 기본모델 활용
+model = load_model("YOLO_coco") 
+
+# image path: 여기에 이미지 파일 위치를 넣어주세요.
 image = cv2.imread('/path/to/imagefile')/255.0
 
-# coco dataset cls names
+# class_names: 리스트 변수로 모델이 학습한 클래스의 이름을 넣어주세요 (한글 X)
 coco_cls_names = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat',
                 'traffic light', 'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
                 'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella',
@@ -67,14 +70,15 @@ coco_cls_names = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', '
                 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink',
                 'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush']
 
-
-
+# 결과 확인: 입력으로 모델, 이미지 변수, confidence
+# 모델 출력이 confidence 값 이상인 경우에만 출력 됨
 result_annotation = predict(model, image, conf=0.4)
+
+# 결과 이미지 그려주기
 result_image = draw_result(np.array(image), result_annotation, class_names = coco_cls_names)
 cv2.imshow('image', result_image)
 
-
-# Close the window when 'Esc' is pressed
+# ESC 누르면 창 닫기
 if cv2.waitKey(0) & 0xFF == 27:
     cv2.destroyAllWindows()
 
@@ -88,10 +92,12 @@ if cv2.waitKey(0) & 0xFF == 27:
 
 from oneclickai.YOLO import stream, load_model
 
-# example usage
+# model path: 여기에 모델 위치를 넣어주세요. 상대위치 or 절대위치
+# model path: "YOLO_coco" coco data로 학습한 기본모델 활용
 model = load_model("YOLO_coco")
 
-# coco dataset cls names
+
+# class_names: 리스트 변수로 모델이 학습한 클래스의 이름을 넣어주세요 (한글 X)
 coco_cls_names = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat',
                 'traffic light', 'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
                 'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella',
@@ -102,6 +108,7 @@ coco_cls_names = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', '
                 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink',
                 'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush']
 
+# 결과 확인: 모델, confidence, 클래스 리스트, 카메라 번호(첫번째 카메라:0, 두번째 카메라:1, ...)
 stream(model, conf=0.5, class_names=coco_cls_names, video_source=0)
 
 ```
@@ -114,15 +121,15 @@ stream(model, conf=0.5, class_names=coco_cls_names, video_source=0)
 
 from oneclickai.YOLO import fit_yolo_model
 
-# training data path
+# 학습용 데이터 위치, 이미지 데이터(.png, .jpg, .jpeg), 라벨 데이터(.txt)
 train_data_path = './yolo_dataset'
 train_label_path = './yolo_dataset'
 
-# validation data path
+# 검증용 데이터 위치, 이미지 데이터(.png, .jpg, .jpeg), 라벨 데이터(.txt)
 val_data_path = './yolo_dataset'
 val_label_path = './yolo_dataset'
 
-# fit model
+# 모델 학습 (데이터 위치, epochs)
 fit_yolo_model(train_data_path, train_label_path, val_data_path, val_label_path, epochs=30)
 
 ```

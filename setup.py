@@ -42,7 +42,7 @@ install_requires = [
 
 setup(
     name='oneclickai',
-    version='0.1.8',
+    version='0.1.9',
     description='OneclickAI package for learning AI with python',
     long_description=open('README.md', encoding='utf-8').read(),
     long_description_content_type='text/markdown',

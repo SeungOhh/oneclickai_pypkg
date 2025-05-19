@@ -10,7 +10,7 @@ from .yoloLoss import yolo_loss_tf
 from .load_model import load_model
 
 
-def fit_yolo_model(train_data_path, train_label_path, val_data_path, val_label_path, epochs=100, batch_size=64):
+def fit_yolo_model(train_data_path, train_label_path, val_data_path, val_label_path, epochs=100, batch_size=8):
 
     # create folder name with current time to save models
     folder_name = datetime.now().strftime("%Y%m%d_%H%M")
