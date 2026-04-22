@@ -5,6 +5,8 @@ import tensorflow as tf
 import logging
 tf.get_logger().setLevel(logging.ERROR)
 from datetime import datetime
+import shutil
+import random
 import matplotlib.pyplot as plt
 
 # import modules
@@ -24,15 +26,53 @@ def _save_tflite(keras_model_path, tflite_path):
         f.write(tflite_model)
 
 
+def _split_dataset(data_path, label_path, val_ratio=0.2, seed=42):
+    """train 데이터를 8:2로 분리해 임시 폴더에 복사 후 경로 반환"""
+    imgs = sorted([f for f in os.listdir(data_path)
+                   if f.lower().endswith(('.jpg', '.jpeg', '.png'))])
+    pairs = [(f, os.path.splitext(f)[0] + '.txt')
+             for f in imgs
+             if os.path.exists(os.path.join(label_path, os.path.splitext(f)[0] + '.txt'))]
+
+    random.seed(seed)
+    random.shuffle(pairs)
+    split = int(len(pairs) * (1 - val_ratio))
+    train_pairs, val_pairs = pairs[:split], pairs[split:]
+    print(f"데이터 자동 분리: 학습 {len(train_pairs)}개 / 검증 {len(val_pairs)}개")
+
+    tmp = '_yolo_tmp_split'
+    t_img = os.path.join(tmp, 'images', 'train')
+    t_lbl = os.path.join(tmp, 'labels', 'train')
+    v_img = os.path.join(tmp, 'images', 'val')
+    v_lbl = os.path.join(tmp, 'labels', 'val')
+    for d in [t_img, t_lbl, v_img, v_lbl]:
+        os.makedirs(d, exist_ok=True)
+
+    for img, lbl in train_pairs:
+        shutil.copy(os.path.join(data_path,  img), os.path.join(t_img, img))
+        shutil.copy(os.path.join(label_path, lbl), os.path.join(t_lbl, lbl))
+    for img, lbl in val_pairs:
+        shutil.copy(os.path.join(data_path,  img), os.path.join(v_img, img))
+        shutil.copy(os.path.join(label_path, lbl), os.path.join(v_lbl, lbl))
+
+    return t_img, t_lbl, v_img, v_lbl, tmp
+
+
 def fit_yolo_model(
-    train_data_path,   # 학습 이미지 폴더 경로 (예: 'data/images/train/')
-    train_label_path,  # 학습 라벨 폴더 경로, YOLO 형식 .txt 파일 (예: 'data/labels/train/')
-    val_data_path,     # 검증 이미지 폴더 경로 (예: 'data/images/val/')
-    val_label_path,    # 검증 라벨 폴더 경로 (예: 'data/labels/val/')
-    epochs=100,        # 전체 학습 반복 횟수
-    batch_size=8,      # 한 번에 처리할 이미지 수 (GPU 메모리에 맞게 조절)
-    save_tflite=True, # True로 설정하면 학습 완료 후 best/last 모델을 .tflite로도 저장
+    train_data_path,        # 학습 이미지 폴더 경로
+    train_label_path,       # 학습 라벨 폴더 경로 (YOLO 형식 .txt)
+    val_data_path=None,     # 검증 이미지 폴더 경로. None이면 학습 데이터에서 자동 8:2 분리
+    val_label_path=None,    # 검증 라벨 폴더 경로. None이면 학습 데이터에서 자동 8:2 분리
+    epochs=100,             # 전체 학습 반복 횟수
+    batch_size=8,           # 한 번에 처리할 이미지 수 (GPU 메모리에 맞게 조절)
+    save_tflite=True,       # True로 설정하면 학습 완료 후 best/last 모델을 .tflite로도 저장
 ):
+
+    # val 경로가 없으면 train 데이터에서 8:2 자동 분리
+    tmp_dir = None
+    if val_data_path is None or val_label_path is None:
+        train_data_path, train_label_path, val_data_path, val_label_path, tmp_dir = \
+            _split_dataset(train_data_path, train_label_path)
 
     # create folder name with current time to save models
     folder_name = datetime.now().strftime("%Y%m%d_%H%M")
@@ -124,6 +164,10 @@ def fit_yolo_model(
     if save_tflite:
         _save_tflite(model_file_best, folder_name + '/yolo_model_best.tflite')
         _save_tflite(model_file_last, folder_name + '/yolo_model_last.tflite')
+
+    # 자동 분리 시 생성한 임시 폴더 삭제
+    if tmp_dir and os.path.exists(tmp_dir):
+        shutil.rmtree(tmp_dir)
 
 
 #%% example usage

@@ -14,7 +14,8 @@ oneclickai.egg-info
 
 *.h5
 
-test/*
+test_yolo/*
+
 
 
 # ignore all .pyc files

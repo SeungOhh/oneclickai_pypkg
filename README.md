@@ -1,7 +1,7 @@
 <div style="text-align: center;">
     <h3>사용 예제 1</h3>
-    <p>야구공 찾기<p>
-    <p>이미지 취득 --> 라벨링 --> 학습 --> 결과 확인<p>
+    <p>야구공 찾기</p>
+    <p>이미지 취득 → 라벨링 → 학습 → 결과 확인</p>
     <img src="https://images.oneclickai.work/movie/introduce/yolo3.webp" alt="Alt Text" width="1200">
 </div>
 
@@ -9,8 +9,8 @@
 
 <div style="text-align: center;">
     <h3>사용 예제 2</h3>
-    <p>내 차 어디갔어<p>
-    <p>이미지 취득 --> 라벨링 --> 학습 --> 결과 확인<p>
+    <p>내 차 어디갔어</p>
+    <p>이미지 취득 → 라벨링 → 학습 → 결과 확인</p>
     <img src="https://images.oneclickai.work/movie/introduce/yolo1.webp" alt="Alt Text" width="1200">
 </div>
 
@@ -25,21 +25,6 @@ OneClickAI에서 제공하는 교육용 Python 패키지는 인공지능(AI) 학
 
 <br></br><br></br>
 
-## 주요 설치 패키지
-- **oneclickai**  
-  자체적으로 모델을 쉽게 학습해보고 테스트 해 볼 수 있는 기능 제공 (설명서는 oneclickai.co.kr 참고)
-
-- **TensorFlow**  
-  구글에서 개발한 오픈소스 딥러닝 라이브러리로, 다양한 머신러닝 모델을 구축하고 훈련할 수 있습니다.
-
-- **OpenCV**  
-  이미지 및 비디오 처리에 널리 사용되는 라이브러리로, 실시간 컴퓨터 비전 애플리케이션 개발에 필수적입니다.
-
-- **Matplotlib**  
-  데이터 시각화 라이브러리로, 모델 학습 결과 그래프를 자동으로 그려줍니다.
-
-<br></br><br></br>
-
 ## 설치 방법
 
 아래의 명령어를 통해 OneClickAI 패키지를 설치할 수 있습니다:
@@ -50,9 +35,25 @@ pip install oneclickai
 
 <br></br><br></br>
 
+## 주요 설치 패키지
+- oneclickai  
+  자체적으로 모델을 쉽게 학습해보고 테스트 해 볼 수 있는 기능 제공 (설명서는 oneclickai.co.kr 참고)
+
+- TensorFlow  
+  구글에서 개발한 오픈소스 딥러닝 라이브러리로, 다양한 머신러닝 모델을 구축하고 훈련할 수 있습니다.
+
+- OpenCV  
+  이미지 및 비디오 처리에 널리 사용되는 라이브러리로, 실시간 컴퓨터 비전 애플리케이션 개발에 필수적입니다.
+
+- Matplotlib  
+  데이터 시각화 라이브러리로, 모델 학습 결과 그래프를 자동으로 그려줍니다.
+
+
+<br></br><br></br>
+
 # YOLO 모델 예제 코드
 
-- **이미지 1장**  
+- 이미지 1장  
 
 ```python
 from oneclickai.YOLO import load_model, predict, draw_result, COCO_CLASS_NAMES
@@ -85,7 +86,7 @@ if cv2.waitKey(0) & 0xFF == 27:
 
 <br></br>
 
-- **스트리밍**  
+- 웹캠 스트리밍  
 
 ```python
 
@@ -104,26 +105,35 @@ stream(model, conf=0.5, iou=0.5, class_names=COCO_CLASS_NAMES, video_source=0)
 
 <br></br>
 
-- **모델학습**  
+- 모델학습  
 
 ```python
 
 from oneclickai.YOLO import fit_yolo_model
 
-# 학습용 데이터 위치, 이미지 데이터(.png, .jpg, .jpeg), 라벨 데이터(.txt)
-train_data_path = './yolo_dataset/images/train'
-train_label_path = './yolo_dataset/labels/train'
-
-# 검증용 데이터 위치, 이미지 데이터(.png, .jpg, .jpeg), 라벨 데이터(.txt)
-val_data_path = './yolo_dataset/images/val'
-val_label_path = './yolo_dataset/labels/val'
+# 이미지(.png, .jpg)와 라벨(.txt)이 같은 폴더에 있으면 자동으로 학습/검증(8:2) 분리
+data_path  = './yolo_dataset'
+label_path = './yolo_dataset'
 
 # 모델 학습
 # epochs: 전체 학습 반복 횟수
 # batch_size: 한 번에 처리할 이미지 수 (GPU 메모리에 맞게 조절)
 # save_tflite: True로 설정하면 학습 완료 후 .tflite 파일도 함께 저장됩니다
-fit_yolo_model(train_data_path, train_label_path, val_data_path, val_label_path,
-               epochs=30, batch_size=8, save_tflite=True)
+fit_yolo_model(data_path, label_path, epochs=30, batch_size=8, save_tflite=True)
+
+```
+
+학습/검증 데이터를 직접 지정하고 싶다면 아래처럼 사용할 수 있습니다:
+
+```python
+
+fit_yolo_model(
+    train_data_path  = './train',   # 학습 이미지 폴더
+    train_label_path = './train',   # 학습 라벨 폴더 (이미지와 같은 폴더)
+    val_data_path    = './val',     # 검증 이미지 폴더
+    val_label_path   = './val',     # 검증 라벨 폴더 (이미지와 같은 폴더)
+    epochs=30, batch_size=8, save_tflite=True
+)
 
 ```
 
@@ -132,6 +142,14 @@ fit_yolo_model(train_data_path, train_label_path, val_data_path, val_label_path,
 - `yolo_model_last.h5` — 마지막 epoch 모델
 - `yolo_model_best.tflite` / `yolo_model_last.tflite` — TFLite 변환 모델 (`save_tflite=True` 시)
 - `training_history.png` — 학습/검증 손실 그래프
+
+<br></br><br></br>
+
+# 직접 체험해보기
+
+아래 Google Colab 링크에서 설치 없이 바로 YOLO 모델을 체험해볼 수 있습니다.
+
+[Google Colab에서 직접 해보기 →](https://drive.google.com/file/d/1mAzizV2mxIRMlAZJdFvuaC6r_QnPsRin/view?usp=sharing)
 
 <br></br><br></br>
 
