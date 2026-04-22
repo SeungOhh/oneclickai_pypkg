@@ -1,9 +1,17 @@
-![Main image](./public/main.png)
+<div style="text-align: center;">
+    <h3>사용 예제 1</h3>
+    <p>야구공 찾기<p>
+    <p>이미지 취득 --> 라벨링 --> 학습 --> 결과 확인<p>
+    <img src="https://images.oneclickai.work/movie/introduce/yolo3.webp" alt="Alt Text" width="1200">
+</div>
 
 <br></br><br></br>
 
 <div style="text-align: center;">
-    <img src="./public/yolo1.webp" alt="Alt Text" width="1200">
+    <h3>사용 예제 2</h3>
+    <p>내 차 어디갔어<p>
+    <p>이미지 취득 --> 라벨링 --> 학습 --> 결과 확인<p>
+    <img src="https://images.oneclickai.work/movie/introduce/yolo1.webp" alt="Alt Text" width="1200">
 </div>
 
 <br></br><br></br>
@@ -13,7 +21,7 @@ YOLO 모델을 쉽게 학습해보고 바로 실행해 볼 수 있도록 하는 
 이론 교육에 앞서 미리 모델을 체험해보고 YOLO 모델의 구조 및 실행 방식에 대해 알아 볼 수 있습니다. 모델은 Tensorflow 기반의 모델로 작성되었습니다.
 
 OneClickAI에서 제공하는 교육용 Python 패키지는 인공지능(AI) 학습을 위한 필수 도구들을 손쉽게 설치하고 활용할 수 있도록 도와줍니다. 
-이 패키지를 통해 TensorFlow, Ultralytics, OpenCV와 같은 필수 라이브러리를 한 번에 설치하고, 추가적인 부가 기능도 손쉽게 통합할 수 있습니다.
+이 패키지를 통해 TensorFlow, OpenCV와 같은 필수 라이브러리를 한 번에 설치하고, 추가적인 부가 기능도 손쉽게 통합할 수 있습니다.
 
 <br></br><br></br>
 
@@ -24,11 +32,11 @@ OneClickAI에서 제공하는 교육용 Python 패키지는 인공지능(AI) 학
 - **TensorFlow**  
   구글에서 개발한 오픈소스 딥러닝 라이브러리로, 다양한 머신러닝 모델을 구축하고 훈련할 수 있습니다.
 
-- **Ultralytics**  
-  최신 YOLOv8 모델을 제공하는 라이브러리로, 객체 탐지 및 컴퓨터 비전 작업에 활용됩니다.
-
 - **OpenCV**  
   이미지 및 비디오 처리에 널리 사용되는 라이브러리로, 실시간 컴퓨터 비전 애플리케이션 개발에 필수적입니다.
+
+- **Matplotlib**  
+  데이터 시각화 라이브러리로, 모델 학습 결과 그래프를 자동으로 그려줍니다.
 
 <br></br><br></br>
 
@@ -46,8 +54,8 @@ pip install oneclickai
 
 - **이미지 1장**  
 
-```
-from oneclickai.YOLO import load_model, predict, draw_result
+```python
+from oneclickai.YOLO import load_model, predict, draw_result, COCO_CLASS_NAMES
 import cv2
 import numpy as np
 
@@ -57,25 +65,16 @@ import numpy as np
 model = load_model("YOLO_coco") 
 
 # image path: 여기에 이미지 파일 위치를 넣어주세요.
-image = cv2.imread('/path/to/imagefile')/255.0
+image = cv2.imread('/path/to/imagefile')
 
-# class_names: 리스트 변수로 모델이 학습한 클래스의 이름을 넣어주세요 (한글 X)
-coco_cls_names = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat',
-                'traffic light', 'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
-                'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella',
-                'handbag', 'tie', 'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat',
-                'baseball glove', 'skateboard', 'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup', 'fork',
-                'knife', 'spoon', 'bowl', 'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog',
-                'pizza', 'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed', 'dining table', 'toilet', 'tv',
-                'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink',
-                'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush']
-
-# 결과 확인: 입력으로 모델, 이미지 변수, confidence
-# 모델 출력이 confidence 값 이상인 경우에만 출력 됨
-result_annotation = predict(model, image, conf=0.4)
+# 결과 확인: 입력으로 모델, 이미지 변수, confidence, iou
+# conf: 이 값 이상인 경우에만 박스가 출력됩니다 (0~1 사이)
+# iou: 겹치는 박스를 제거하는 기준값입니다 (0~1 사이, 낮을수록 더 많이 제거)
+result_annotation = predict(model, image, conf=0.5, iou=0.5)
 
 # 결과 이미지 그려주기
-result_image = draw_result(np.array(image), result_annotation, class_names = coco_cls_names)
+# COCO_CLASS_NAMES: COCO 데이터셋의 80개 클래스 이름이 저장된 리스트입니다
+result_image = draw_result(np.array(image), result_annotation, class_names=COCO_CLASS_NAMES)
 cv2.imshow('image', result_image)
 
 # ESC 누르면 창 닫기
@@ -88,28 +87,18 @@ if cv2.waitKey(0) & 0xFF == 27:
 
 - **스트리밍**  
 
-```
+```python
 
-from oneclickai.YOLO import stream, load_model
+from oneclickai.YOLO import stream, load_model, COCO_CLASS_NAMES
 
 # model path: 여기에 모델 위치를 넣어주세요. 상대위치 or 절대위치
 # model path: "YOLO_coco" coco data로 학습한 기본모델 활용
 model = load_model("YOLO_coco")
 
-
-# class_names: 리스트 변수로 모델이 학습한 클래스의 이름을 넣어주세요 (한글 X)
-coco_cls_names = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat',
-                'traffic light', 'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
-                'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella',
-                'handbag', 'tie', 'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat',
-                'baseball glove', 'skateboard', 'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup', 'fork',
-                'knife', 'spoon', 'bowl', 'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog',
-                'pizza', 'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed', 'dining table', 'toilet', 'tv',
-                'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink',
-                'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush']
-
-# 결과 확인: 모델, confidence, 클래스 리스트, 카메라 번호(첫번째 카메라:0, 두번째 카메라:1, ...)
-stream(model, conf=0.5, class_names=coco_cls_names, video_source=0)
+# 결과 확인: 모델, confidence, iou, 클래스 리스트, 카메라 번호(첫번째 카메라:0, 두번째 카메라:1, ...)
+# 화면 우측 상단에 FPS가 실시간으로 표시됩니다
+# 종료하려면 'q' 키를 누르세요
+stream(model, conf=0.5, iou=0.5, class_names=COCO_CLASS_NAMES, video_source=0)
 
 ```
 
@@ -117,22 +106,32 @@ stream(model, conf=0.5, class_names=coco_cls_names, video_source=0)
 
 - **모델학습**  
 
-```
+```python
 
 from oneclickai.YOLO import fit_yolo_model
 
 # 학습용 데이터 위치, 이미지 데이터(.png, .jpg, .jpeg), 라벨 데이터(.txt)
-train_data_path = './yolo_dataset'
-train_label_path = './yolo_dataset'
+train_data_path = './yolo_dataset/images/train'
+train_label_path = './yolo_dataset/labels/train'
 
 # 검증용 데이터 위치, 이미지 데이터(.png, .jpg, .jpeg), 라벨 데이터(.txt)
-val_data_path = './yolo_dataset'
-val_label_path = './yolo_dataset'
+val_data_path = './yolo_dataset/images/val'
+val_label_path = './yolo_dataset/labels/val'
 
-# 모델 학습 (데이터 위치, epochs)
-fit_yolo_model(train_data_path, train_label_path, val_data_path, val_label_path, epochs=30)
+# 모델 학습
+# epochs: 전체 학습 반복 횟수
+# batch_size: 한 번에 처리할 이미지 수 (GPU 메모리에 맞게 조절)
+# save_tflite: True로 설정하면 학습 완료 후 .tflite 파일도 함께 저장됩니다
+fit_yolo_model(train_data_path, train_label_path, val_data_path, val_label_path,
+               epochs=30, batch_size=8, save_tflite=True)
 
 ```
+
+학습이 완료되면 날짜/시간 이름의 폴더에 아래 파일들이 자동으로 저장됩니다:
+- `yolo_model_best.h5` — 검증 손실 기준 가장 좋은 모델
+- `yolo_model_last.h5` — 마지막 epoch 모델
+- `yolo_model_best.tflite` / `yolo_model_last.tflite` — TFLite 변환 모델 (`save_tflite=True` 시)
+- `training_history.png` — 학습/검증 손실 그래프
 
 <br></br><br></br>
 
@@ -149,4 +148,3 @@ OneClickAI 패키지는 기본 제공되는 라이브러리 외에도 교육 목
 
 
 ![Alt Text](https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif)
-

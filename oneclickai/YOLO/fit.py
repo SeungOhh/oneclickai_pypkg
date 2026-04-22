@@ -1,16 +1,38 @@
 #%%
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # 0=all, 1=info, 2=warning, 3=error only
 import tensorflow as tf
+import logging
+tf.get_logger().setLevel(logging.ERROR)
 from datetime import datetime
+import matplotlib.pyplot as plt
 
 # import modules
 from . import yoloModel8
 from . import createDataGenerator
+
 from .yoloLoss import yolo_loss_tf
 from .load_model import load_model
 
 
-def fit_yolo_model(train_data_path, train_label_path, val_data_path, val_label_path, epochs=100, batch_size=8):
+def _save_tflite(keras_model_path, tflite_path):
+    converter = tf.lite.TFLiteConverter.from_keras_model(
+        tf.keras.models.load_model(keras_model_path, custom_objects={"yolo_loss_tf": yolo_loss_tf})
+    )
+    tflite_model = converter.convert()
+    with open(tflite_path, 'wb') as f:
+        f.write(tflite_model)
+
+
+def fit_yolo_model(
+    train_data_path,   # 학습 이미지 폴더 경로 (예: 'data/images/train/')
+    train_label_path,  # 학습 라벨 폴더 경로, YOLO 형식 .txt 파일 (예: 'data/labels/train/')
+    val_data_path,     # 검증 이미지 폴더 경로 (예: 'data/images/val/')
+    val_label_path,    # 검증 라벨 폴더 경로 (예: 'data/labels/val/')
+    epochs=100,        # 전체 학습 반복 횟수
+    batch_size=8,      # 한 번에 처리할 이미지 수 (GPU 메모리에 맞게 조절)
+    save_tflite=True, # True로 설정하면 학습 완료 후 best/last 모델을 .tflite로도 저장
+):
 
     # create folder name with current time to save models
     folder_name = datetime.now().strftime("%Y%m%d_%H%M")
@@ -60,12 +82,12 @@ def fit_yolo_model(train_data_path, train_label_path, val_data_path, val_label_p
         save_best_only=True)
 
     # save model every epoch with epoch number in file name
-    model_checkpoint_callback2 = tf.keras.callbacks.ModelCheckpoint(
-        filepath=folder_name + '/yolo_model_epoch_{epoch}' + ext,
-        save_weights_only=False,
-        monitor='val_loss',
-        mode='min',
-        save_best_only=False)
+    # model_checkpoint_callback2 = tf.keras.callbacks.ModelCheckpoint(
+    #     filepath=folder_name + '/yolo_model_epoch_{epoch}' + ext,
+    #     save_weights_only=False,
+    #     monitor='val_loss',
+    #     mode='min',
+    #     save_best_only=False)
 
 
     ## tensorboard callback
@@ -73,7 +95,7 @@ def fit_yolo_model(train_data_path, train_label_path, val_data_path, val_label_p
     #                                    histogram_freq=1, profile_batch='5,10')
 
     # train using generator
-    model.fit(
+    history = model.fit(
         train_gen,
         # steps_per_epoch=4000,
         validation_data=val_gen,
@@ -81,11 +103,27 @@ def fit_yolo_model(train_data_path, train_label_path, val_data_path, val_label_p
         batch_size=batch_size,
         # use_multiprocessing=True,  # Use multiple processes to run the generator in parallel
         # workers=16,  # Number of worker processes
-        callbacks=[model_checkpoint_callback, model_checkpoint_callback2]
+        callbacks=[model_checkpoint_callback]  # model_checkpoint_callback2]
     )
 
     # save the last model
     model.save(model_file_last)
+
+    # plot training history
+    plt.figure(figsize=(10, 4))
+    plt.plot(history.history['loss'], label='train loss')
+    plt.plot(history.history['val_loss'], label='val loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.title('Training History')
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(folder_name + '/training_history.png')
+    plt.show()
+
+    if save_tflite:
+        _save_tflite(model_file_best, folder_name + '/yolo_model_best.tflite')
+        _save_tflite(model_file_last, folder_name + '/yolo_model_last.tflite')
 
 
 #%% example usage

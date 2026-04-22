@@ -9,6 +9,8 @@ oneclickai.egg-info
 
 # ignore some personal files
 패키지올리는방법.txt
+.pypirc
+~/.pypirc
 
 *.h5
 

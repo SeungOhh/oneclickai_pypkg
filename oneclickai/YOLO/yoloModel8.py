@@ -162,4 +162,4 @@ if __name__ == '__main__':
     model.summary()
 
     # save model
-    model.save('yolo_model8.h5')
+    # model.save('yolo_model8.h5')

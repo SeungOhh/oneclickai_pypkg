@@ -2,8 +2,32 @@
 import numpy as np
 
 
+def _iou(box1, box2):
+    # box format: [x_center, y_center, w, h]
+    x1, y1, w1, h1 = box1
+    x2, y2, w2, h2 = box2
+    inter_x1 = max(x1 - w1/2, x2 - w2/2)
+    inter_y1 = max(y1 - h1/2, y2 - h2/2)
+    inter_x2 = min(x1 + w1/2, x2 + w2/2)
+    inter_y2 = min(y1 + h1/2, y2 + h2/2)
+    inter = max(0, inter_x2 - inter_x1) * max(0, inter_y2 - inter_y1)
+    union = w1*h1 + w2*h2 - inter
+    return inter / union if union > 0 else 0
+
+
+def _nms(boxes, iou_threshold):
+    # boxes: list of [class_id, x, y, w, h, conf]
+    boxes = sorted(boxes, key=lambda b: b[5], reverse=True)
+    kept = []
+    while boxes:
+        best = boxes.pop(0)
+        kept.append(best)
+        boxes = [b for b in boxes if b[0] != best[0] or _iou(best[1:5], b[1:5]) < iou_threshold]
+    return kept
+
+
 # yolo output to bbox
-def decode(high_prediction, low_prediction, high_stride, low_stride, conf_threshold, original_image=False):
+def decode(high_prediction, low_prediction, high_stride, low_stride, conf_threshold, iou_threshold=0.5, original_image=False):
 
     boxes = []
     
@@ -26,6 +50,7 @@ def decode(high_prediction, low_prediction, high_stride, low_stride, conf_thresh
             # Unpack the parameters for this grid cell.
             # Expected layout: [tx, ty, tw, th, conf, p1, p2, ...]
             tx, ty, tw, th, conf, *class_scores = pred[row, col, :]
+            conf = min(1.0, conf)
             
             # Decode the center coordinates relative to the whole image.
             # (tx, ty) are the offsets inside the grid cell.
@@ -49,13 +74,10 @@ def decode(high_prediction, low_prediction, high_stride, low_stride, conf_thresh
             else:
                 predicted_class = -1
             
-            # Append the decoded box as integers.
-            boxes.append([predicted_class,
-                          bx,
-                          by,
-                          bw,
-                          bh])
-    return boxes
+            boxes.append([predicted_class, bx, by, bw, bh, conf])
+
+    boxes = _nms(boxes, iou_threshold)
+    return boxes  # [class_id, x, y, w, h, conf]
 
 
 #%%

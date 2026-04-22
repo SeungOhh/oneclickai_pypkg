@@ -3,49 +3,61 @@ import numpy as np
 import cv2
 import os
 
+try:
+    from google.colab.patches import cv2_imshow as _cv2_imshow
+    _IN_COLAB = True
+except ImportError:
+    _IN_COLAB = False
+
 
 # display yolo result: each image with waitkey
 def draw_result_imshow(image, annotation, class_names=None):
     disp_image = draw_result(image, annotation, class_names)
-    cv2.imshow('image', disp_image)
-    cv2.waitKey(0)
+    if _IN_COLAB:
+        _cv2_imshow(disp_image)
+    else:
+        cv2.imshow('image', disp_image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
+
+
+def _class_color(class_id):
+    hue = int(class_id * 37) % 180
+    color = np.array([[[hue, 220, 220]]], dtype=np.uint8)
+    bgr = cv2.cvtColor(color, cv2.COLOR_HSV2BGR)[0][0]
+    return (int(bgr[0]), int(bgr[1]), int(bgr[2]))
 
 
 # display yolo result
 def draw_result(image, annotation, class_names=None):
 
-    # draw boxes
     img_size_y = image.shape[0]
     img_size_x = image.shape[1]
 
-    # draw image first
-    disp_image = image.copy()*255
-    disp_image = disp_image.astype(np.uint8)
-    
-    # print(disp_image)
+    disp_image = np.array(image, dtype=np.uint8)
+
     for box in annotation:
-        class_id, x, y, w, h = box
+        class_id, x, y, w, h, conf = box
         x = x * img_size_x
         y = y * img_size_y
         w = w * img_size_x
         h = h * img_size_y
-        
 
-        # check if class id is valid
         if (class_names != None) and (class_id >= len(class_names)):
             continue
 
-        # if coco dataset, display class name
         if class_names is not None:
             cls_name = class_names[int(class_id)]
-        else: 
+        else:
             cls_name = str(int(class_id))
-        
-        # display box
-        cv2.rectangle(disp_image, (int(x-w/2), int(y-h/2)), (int(x+w/2), int(y+h/2)), (0, 255, 0), 2)
-        # display class name
-        cv2.putText(disp_image, cls_name, (int(x-w/2+5), int(y+h/2-5)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+
+        box_color = _class_color(class_id)
+        text_color = box_color
+
+        label = f"{cls_name} {conf:.2f}"
+        cv2.rectangle(disp_image, (int(x-w/2), int(y-h/2)), (int(x+w/2), int(y+h/2)), box_color, 2)
+        cv2.putText(disp_image, label, (int(x-w/2+5), int(y+h/2-5)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, text_color, 2)
 
     return disp_image
 
